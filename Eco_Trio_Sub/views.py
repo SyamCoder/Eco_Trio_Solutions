@@ -330,28 +330,32 @@ def team_view(request):
 
 
 def register_view(request):
-    # ✅ Step 1: If already registered in session, skip
-    if request.session.get('registered'):
-        return redirect('/home')
-
-    # ✅ Step 2: If logged in, check DB by email
+    # ✅ Step 1: If user is logged in, check DB
     if request.user.is_authenticated:
-        if Registration.objects.filter(email=request.user.email).exists():
-            request.session['registered'] = True
+        if Registration.objects.filter(email__iexact=request.user.email).exists():
+            return redirect('/home')
+
+    # ✅ Step 2: If guest user, check if their email was stored before
+    if request.session.get('registered_email'):
+        if Registration.objects.filter(email__iexact=request.session['registered_email']).exists():
             return redirect('/home')
 
     # ✅ Step 3: POST - Handle new registration
     if request.method == 'POST':
         data = request.POST
-        email = data.get('email')
+        email = data.get('email', '').strip().lower()
 
-        # Check if already in DB
-        if Registration.objects.filter(email=email).exists():
-            request.session['registered'] = True
+        # Require email
+        if not email:
+            return render(request, 'register.html', {'error': 'Email is required.'})
+
+        # Already in DB? Then skip register
+        if Registration.objects.filter(email__iexact=email).exists():
+            request.session['registered_email'] = email
             return redirect('/home')
 
+        # Require all required fields
         if data.get('first_name') and data.get('phone') and data.get('occupation') and data.get('interest'):
-            # Save to DB
             Registration.objects.create(
                 first_name=data.get('first_name'),
                 last_name=data.get('last_name'),
@@ -363,7 +367,7 @@ def register_view(request):
                 device_info=data.get('device_info'),
             )
 
-            # 📧 Email to admin
+            # 📧 Send email to admin
             subject = f"New Registration Submission from {data.get('first_name')}"
             body = f"""
 📬 New Inquiry/Registration:
@@ -384,14 +388,14 @@ def register_view(request):
                 fail_silently=False,
             )
 
-            # Mark as registered in session
-            request.session['registered'] = True
+            # Store email in session so even guest users are remembered for this session
+            request.session['registered_email'] = email
 
             return redirect('/home')
         else:
             return render(request, 'register.html', {'error': 'Please fill all required fields.'})
 
-    # ✅ Step 4: Show form only if not registered
+    # ✅ Step 4: Show the registration form
     return render(request, 'register.html')
 
 
