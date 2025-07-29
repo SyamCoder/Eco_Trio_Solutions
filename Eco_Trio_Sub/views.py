@@ -16,7 +16,6 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.core.mail import EmailMessage, send_mail
 from django.conf import settings
 from .models import Job
-from .forms import RegistrationForm  # ✅ Import your form
 
 EMAIL_HOST_USER = 'annaluruchaitanya@gmail.com'
 
@@ -329,11 +328,13 @@ def team_view(request):
     team_members = TeamMember.objects.all()
     return render(request, 'team.html', {'team_members': team_members})
 
-import logging
 
-logger = logging.getLogger(__name__)
+from django.shortcuts import render, redirect
+from django.utils import timezone
+from django.core.mail import send_mail
+from django.conf import settings
+from .models import Registration
 
-@csrf_exempt  # TEMPORARY — remove later after debug
 def register_view(request):
     # ✅ Step 1: If already registered in session, skip
     if request.session.get('registered'):
@@ -347,33 +348,16 @@ def register_view(request):
 
     # ✅ Step 3: POST - Handle new registration
     if request.method == 'POST':
-        post_data = request.POST.copy()
-
-        # Parse signup_time from JS format to Django format
-        if 'signup_time' in post_data:
-            try:
-                post_data['signup_time'] = datetime.strptime(
-                    post_data['signup_time'], '%m/%d/%Y, %I:%M:%S %p'
-                )
-            except ValueError:
-                post_data['signup_time'] = None  # Let form raise validation error
-
-        form = RegistrationForm(post_data)
-        if form.is_valid():
-            form.save()
-            return JsonResponse({"success": True})
-        else:
-            print("❌ Form Errors:", form.errors)
-            return JsonResponse({"success": False, "errors": form.errors}, status=400)
-        # data = request.POST
-        # email = data.get('email')
+        data = request.POST
+        email = data.get('email')
 
         # Check if already in DB
         if Registration.objects.filter(email=email).exists():
             request.session['registered'] = True
             return redirect('/home')
 
-        if data.get('first_name') and data.get('phone') and data.get('occupation') and data.get('interest'):
+        # Check required fields
+        if all([data.get('first_name'), data.get('phone'), data.get('occupation'), data.get('interest')]):
             # Save to DB
             Registration.objects.create(
                 first_name=data.get('first_name'),
@@ -382,7 +366,7 @@ def register_view(request):
                 email=email,
                 occupation=data.get('occupation'),
                 interest=data.get('interest'),
-                signup_time=timezone.now(),
+                signup_time=timezone.now(),  # ⏰ Use timezone.now()
                 device_info=data.get('device_info'),
             )
 
@@ -397,7 +381,7 @@ def register_view(request):
 💼 Occupation: {data.get('occupation')}
 🧠 Interest: {data.get('interest')}
 🖥️ Device Info: {data.get('device_info')}
-⏰ Time: {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
+⏰ Time: {timezone.now().strftime('%Y-%m-%d %H:%M:%S')}
 """
             send_mail(
                 subject,
@@ -416,6 +400,72 @@ def register_view(request):
 
     # ✅ Step 4: Show form only if not registered
     return render(request, 'register.html')
+
+#Main registerview function
+# def register_view(request):
+#     # ✅ Step 1: If already registered in session, skip
+#     if request.session.get('registered'):
+#         return redirect('/home')
+
+#     # ✅ Step 2: If logged in, check DB by email
+#     if request.user.is_authenticated:
+#         if Registration.objects.filter(email=request.user.email).exists():
+#             request.session['registered'] = True
+#             return redirect('/home')
+
+#     # ✅ Step 3: POST - Handle new registration
+#     if request.method == 'POST':
+#         data = request.POST
+#         email = data.get('email')
+
+#         # Check if already in DB
+#         if Registration.objects.filter(email=email).exists():
+#             request.session['registered'] = True
+#             return redirect('/home')
+
+#         if data.get('first_name') and data.get('phone') and data.get('occupation') and data.get('interest'):
+#             # Save to DB
+#             Registration.objects.create(
+#                 first_name=data.get('first_name'),
+#                 last_name=data.get('last_name'),
+#                 phone=data.get('phone'),
+#                 email=email,
+#                 occupation=data.get('occupation'),
+#                 interest=data.get('interest'),
+#                 signup_time=timezone.now(),
+#                 device_info=data.get('device_info'),
+#             )
+
+#             # 📧 Email to admin
+#             subject = f"New Registration Submission from {data.get('first_name')}"
+#             body = f"""
+# 📬 New Inquiry/Registration:
+
+# 👤 Name: {data.get('first_name')} {data.get('last_name')}
+# 📞 Phone: {data.get('phone')}
+# 📧 Email: {email}
+# 💼 Occupation: {data.get('occupation')}
+# 🧠 Interest: {data.get('interest')}
+# 🖥️ Device Info: {data.get('device_info')}
+# ⏰ Time: {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
+# """
+#             send_mail(
+#                 subject,
+#                 body,
+#                 settings.EMAIL_HOST_USER,
+#                 ['ecotriosolutionweb@gmail.com'],
+#                 fail_silently=False,
+#             )
+
+#             # Mark as registered in session
+#             request.session['registered'] = True
+
+#             return redirect('/home')
+#         else:
+#             return render(request, 'register.html', {'error': 'Please fill all required fields.'})
+
+#     # ✅ Step 4: Show form only if not registered
+#     return render(request, 'register.html')
 
 
 
