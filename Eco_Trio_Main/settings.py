@@ -282,7 +282,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'Eco_Trio_Main.wsgi.application'
+WSGI_APPLICATION = 'Eco_Trio_Sub.wsgi.application'
 
 # Database settings
 DATABASE_URL = os.environ.get('DATABASE_URL')
