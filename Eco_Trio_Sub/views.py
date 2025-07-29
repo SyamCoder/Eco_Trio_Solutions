@@ -328,7 +328,11 @@ def team_view(request):
     team_members = TeamMember.objects.all()
     return render(request, 'team.html', {'team_members': team_members})
 
+import logging
 
+logger = logging.getLogger(__name__)
+
+@csrf_exempt  # TEMPORARY — remove later after debug
 def register_view(request):
     # ✅ Step 1: If already registered in session, skip
     if request.session.get('registered'):
@@ -342,6 +346,8 @@ def register_view(request):
 
     # ✅ Step 3: POST - Handle new registration
     if request.method == 'POST':
+        print("📩 POST DATA:", request.POST)  # Will appear in Render logs
+        logger.warning(f"📩 POST DATA: {request.POST}") 
         data = request.POST
         email = data.get('email')
 
