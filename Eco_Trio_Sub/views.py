@@ -253,41 +253,115 @@ def logout_view(request):
 
 import requests
 
+# def register_view(request):
+#     if request.user.is_authenticated:
+#         if Registration.objects.filter(email=request.user.email).exists():
+#             return redirect('/home')
+        
+#     if request.method == 'POST':
+#         data = request.POST
+#         if data.get('first_name') and data.get('phone') and data.get('occupation') and data.get('interest'):
+#             Registration.objects.create(
+#                 first_name=data.get('first_name'),
+#                 last_name=data.get('last_name'),
+#                 phone=data.get('phone'),
+#                 email=data.get('email'),
+#                 occupation=data.get('occupation'),
+#                 interest=data.get('interest'),
+#                 signup_time=timezone.now(),
+#                 device_info=data.get('device_info'),
+#             )
+
+#             # 📧 Email to admin
+#             subject = f"New Registration Submission from {data.get('first_name')}"
+#             body = f"""
+# 📬 New Inquiry/Registration:
+
+# 👤 Name: {data.get('first_name')} {data.get('last_name')}
+# 📞 Phone: {data.get('phone')}
+# 📧 Email: {data.get('email')}
+# 💼 Occupation: {data.get('occupation')}
+# 🧠 Interest: {data.get('interest')}
+# 🖥️ Device Info: {data.get('device_info')}
+# ⏰ Time: {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
+# """
+#             send_mail(
+#                 subject,
+#                 body,
+#                 settings.EMAIL_HOST_USER,
+#                 ['ecotriosolutionweb@gmail.com'],
+#                 fail_silently=False,
+#             )
+
+#             request.session['registered'] = True
+#             return redirect('/home')
+#         else:
+#             return render(request, 'register.html', {'error': 'Please fill all required fields.'})
+#     return render(request, 'register.html')
+
+
+# def home_view(request):
+#     if not request.session.get('registered'):
+#         return redirect('/register/')
+#     return render(request, 'index.html')
+
+
+# def agri_services_view(request):
+#     if not request.session.get('registered'):
+#         return redirect('/register/')
+#     return render(request, 'agri_service.html')
+
+# def global_view(request):
+#     if not request.session.get('registered'):
+#         return redirect('/register/')
+#     return render(request, 'go_global.html')
+
+# def digital_grow(request):
+#     if not request.session.get('registered'):
+#         return redirect('/register/')
+#     return render(request, 'digital.html')
+
+# def team_view(request):
+#     if not request.session.get('registered'):
+#         return redirect('/register/')
+#     #return render(request, 'team.html')
+#     team_members = TeamMember.objects.all()
+#     return render(request, 'team.html', {'team_members': team_members})
+
+
 def register_view(request):
+    # ✅ Step 1: If already registered in session, skip
+    if request.session.get('registered'):
+        return redirect('/home')
+
+    # ✅ Step 2: If logged in, check DB by email
     if request.user.is_authenticated:
         if Registration.objects.filter(email=request.user.email).exists():
+            request.session['registered'] = True
             return redirect('/home')
-        
+
+    # ✅ Step 3: POST - Handle new registration
     if request.method == 'POST':
         data = request.POST
+        email = data.get('email')
+
+        # Check if already in DB
+        if Registration.objects.filter(email=email).exists():
+            request.session['registered'] = True
+            return redirect('/home')
+
         if data.get('first_name') and data.get('phone') and data.get('occupation') and data.get('interest'):
+            # Save to DB
             Registration.objects.create(
                 first_name=data.get('first_name'),
                 last_name=data.get('last_name'),
                 phone=data.get('phone'),
-                email=data.get('email'),
+                email=email,
                 occupation=data.get('occupation'),
                 interest=data.get('interest'),
                 signup_time=timezone.now(),
                 device_info=data.get('device_info'),
             )
-
-            # 🔄 Submit to Google Form
-            form_url = "https://docs.google.com/forms/d/e/XXXXXXXXXXXXXX/formResponse"  # change this
-            form_data = {
-                "entry.1111111111": data.get('first_name'),     # change IDs
-                "entry.2222222222": data.get('last_name'),
-                "entry.3333333333": data.get('phone'),
-                "entry.4444444444": data.get('email'),
-                "entry.5555555555": data.get('occupation'),
-                "entry.6666666666": data.get('interest'),
-                "entry.7777777777": data.get('device_info'),
-            }
-
-            try:
-                requests.post(form_url, data=form_data)
-            except Exception as e:
-                print("Google Form submission failed:", e)
 
             # 📧 Email to admin
             subject = f"New Registration Submission from {data.get('first_name')}"
@@ -296,7 +370,7 @@ def register_view(request):
 
 👤 Name: {data.get('first_name')} {data.get('last_name')}
 📞 Phone: {data.get('phone')}
-📧 Email: {data.get('email')}
+📧 Email: {email}
 💼 Occupation: {data.get('occupation')}
 🧠 Interest: {data.get('interest')}
 🖥️ Device Info: {data.get('device_info')}
@@ -310,40 +384,16 @@ def register_view(request):
                 fail_silently=False,
             )
 
+            # Mark as registered in session
             request.session['registered'] = True
+
             return redirect('/home')
         else:
             return render(request, 'register.html', {'error': 'Please fill all required fields.'})
+
+    # ✅ Step 4: Show form only if not registered
     return render(request, 'register.html')
 
-
-def home_view(request):
-    if not request.session.get('registered'):
-        return redirect('/register/')
-    return render(request, 'index.html')
-
-
-def agri_services_view(request):
-    if not request.session.get('registered'):
-        return redirect('/register/')
-    return render(request, 'agri_service.html')
-
-def global_view(request):
-    if not request.session.get('registered'):
-        return redirect('/register/')
-    return render(request, 'go_global.html')
-
-def digital_grow(request):
-    if not request.session.get('registered'):
-        return redirect('/register/')
-    return render(request, 'digital.html')
-
-def team_view(request):
-    if not request.session.get('registered'):
-        return redirect('/register/')
-    #return render(request, 'team.html')
-    team_members = TeamMember.objects.all()
-    return render(request, 'team.html', {'team_members': team_members})
 
 
 def contact_view(request):
