@@ -12,8 +12,9 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 
 import os
 from pathlib import Path
+import dj_database_url # Make sure this import is here
 from dotenv import load_dotenv
-load_dotenv()
+load_dotenv() # Loads environment variables from a .env file locally
 
 # TWILIO_ACCOUNT_SID = os.getenv('TWILIO_ACCOUNT_SID')
 # TWILIO_AUTH_TOKEN = os.getenv('TWILIO_AUTH_TOKEN')
@@ -27,17 +28,20 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-# SECRET_KEY = 'django-insecure-69b8%5rjubdpecq0l*3$2_0bf$p+w-5djvm%ha97@bcr161)g2'
-SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY')
+SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY') # Loaded from environment variable
 
 # SECURITY WARNING: don't run with debug turned on in production!
-# DEBUG = True
-DEBUG = os.environ.get('DEBUG', 'False') == 'True'
+DEBUG = os.environ.get('DEBUG', 'False') == 'True' # Loaded from environment variable
 
 
+# Dynamic ALLOWED_HOSTS and CSRF_TRUSTED_ORIGINS for Render deployment
+ALLOWED_HOSTS = [os.environ.get('RENDER_EXTERNAL_HOSTNAME')] # Get hostname from Render env var
+CSRF_TRUSTED_ORIGINS = [f"https://{os.environ.get('RENDER_EXTERNAL_HOSTNAME')}"] # Use f-string for dynamic trusted origin
 
-ALLOWED_HOSTS = ['eco-trio-solutions-1-51pn.onrender.com']
-CSRF_TRUSTED_ORIGINS = ['https://eco-trio-solutions-1-51pn.onrender.com']
+if DEBUG:
+    # Add localhost and 127.0.0.1 for local development when DEBUG is True
+    ALLOWED_HOSTS += ['localhost', '127.0.0.1']
+    CSRF_TRUSTED_ORIGINS += ['http://localhost:8000', 'http://127.0.0.1:8000']
 
 
 # Application definition
@@ -54,7 +58,7 @@ INSTALLED_APPS = [
     'allauth.account',
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',
-    'whitenoise.runserver_nostatic',  # Add this line for Whitenoise
+    'whitenoise.runserver_nostatic', # Add this line for Whitenoise
 ]
 
 AUTHENTICATION_BACKENDS = [
@@ -81,7 +85,7 @@ ROOT_URLCONF = 'Eco_Trio_Main.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'Eco_Trio_Sub/templates')],
+        'DIRS': [os.path.join(BASE_DIR, 'Eco_Trio_Sub/templates')], # This seems correct for app-specific templates
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -101,16 +105,12 @@ WSGI_APPLICATION = 'Eco_Trio_Main.wsgi.application'
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'railway',
-        'USER': 'postgres',
-        'PASSWORD': os.environ.get('DB_PASSWORD_YO'), 
-        'HOST': 'yamanote.proxy.rlwy.net',  # or '127.0.0.1'
-        'PORT': '37810',       # default PostgreSQL port
-    }
+    'default': dj_database_url.config(
+        default=os.environ.get('DATABASE_URL'), # Use DATABASE_URL from environment variable
+        conn_max_age=600, # Optional: connection timeout
+        conn_health_checks=True # Recommended for robust connections
+    )
 }
-
 
 
 # Password validation
@@ -136,8 +136,8 @@ AUTH_PASSWORD_VALIDATORS = [
 SOCIALACCOUNT_PROVIDERS = {
     'google': {
         'APP':{
-            'client_id': os.environ.get('GOOGLE_CLIENT_ID'),
-            'secret': os.environ.get('GOOGLE_CLIENT_SECRET'),
+            'client_id': os.environ.get('GOOGLE_CLIENT_ID'), # Loaded from environment variable
+            'secret': os.environ.get('GOOGLE_CLIENT_SECRET'), # Loaded from environment variable
         },
         'SCOPE': ['profile', 'email'],
         'AUTH_PARAMS': {
@@ -163,13 +163,20 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
 STATIC_URL = '/static/'
+
+# Corrected STATICFILES_DIRS based on "my static files under Eco_Trio_Sub"
+# This assumes you have files directly in Eco_Trio_Sub/static/ (e.g., Eco_Trio_Sub/static/css/global.css)
 STATICFILES_DIRS = [
     BASE_DIR / 'Eco_Trio_Sub' / 'static',
 ]
+# If all your static files are namespaced (e.g., Eco_Trio_Sub/static/Eco_Trio_Sub/css/app.css)
+# then you can use STATICFILES_DIRS = [] to avoid the warning.
+# Django automatically finds static files within app's static/ directories.
+
+STATIC_ROOT = BASE_DIR / 'staticfiles' # Directory for collectstatic output
 
 # Whitenoise settings
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
-STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 
 #Image files
@@ -188,10 +195,8 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'  # for Gmail
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-# EMAIL_HOST_USER = 'ecotriosolutionweb@gmail.com'  # your email
-# EMAIL_HOST_PASSWORD = 'xaaq jgsx lizd tgqk'  # use App Password if using Gmail
-EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
-EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
+EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER') # Loaded from environment variable
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD') # Loaded from environment variable
 
 
 SOCIALACCOUNT_LOGIN_ON_GET = True  # Automatically log in users after social account authentication
