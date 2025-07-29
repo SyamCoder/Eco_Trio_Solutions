@@ -224,12 +224,32 @@ DEBUG = os.environ.get('DEBUG', 'False') == 'True'
 
 # Allowed hosts and CSRF settings for Render
 RENDER_EXTERNAL_HOSTNAME = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
-ALLOWED_HOSTS = [RENDER_EXTERNAL_HOSTNAME] if RENDER_EXTERNAL_HOSTNAME else []
-CSRF_TRUSTED_ORIGINS = [f"https://{RENDER_EXTERNAL_HOSTNAME}"] if RENDER_EXTERNAL_HOSTNAME else []
 
+# ✅ Add Render URL, your custom domain, and www version
+ALLOWED_HOSTS = [
+    RENDER_EXTERNAL_HOSTNAME,             # Render hostname
+    'ecotrio.in',                          # Your domain
+    'www.ecotrio.in'                       # www version
+]
+
+CSRF_TRUSTED_ORIGINS = [
+    f"https://{RENDER_EXTERNAL_HOSTNAME}",
+    "https://ecotrio.in",
+    "https://www.ecotrio.in"
+]
+
+# Optional: Allow localhost in debug mode
 if DEBUG:
     ALLOWED_HOSTS += ['localhost', '127.0.0.1']
-    CSRF_TRUSTED_ORIGINS += ['http://localhost:8000', 'http://127.0.0.1:8000']
+    CSRF_TRUSTED_ORIGINS += [
+        'http://localhost:8000',
+        'http://127.0.0.1:8000'
+    ]
+
+
+# if DEBUG:
+#     ALLOWED_HOSTS += ['localhost', '127.0.0.1']
+#     CSRF_TRUSTED_ORIGINS += ['http://localhost:8000', 'http://127.0.0.1:8000']
 
 # Application definition
 INSTALLED_APPS = [
