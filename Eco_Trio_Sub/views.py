@@ -300,33 +300,33 @@ import requests
 #     return render(request, 'register.html')
 
 
-# def home_view(request):
-#     if not request.session.get('registered'):
-#         return redirect('/register/')
-#     return render(request, 'index.html')
+def home_view(request):
+    if not request.session.get('registered'):
+        return redirect('/register/')
+    return render(request, 'index.html')
 
 
-# def agri_services_view(request):
-#     if not request.session.get('registered'):
-#         return redirect('/register/')
-#     return render(request, 'agri_service.html')
+def agri_services_view(request):
+    if not request.session.get('registered'):
+        return redirect('/register/')
+    return render(request, 'agri_service.html')
 
-# def global_view(request):
-#     if not request.session.get('registered'):
-#         return redirect('/register/')
-#     return render(request, 'go_global.html')
+def global_view(request):
+    if not request.session.get('registered'):
+        return redirect('/register/')
+    return render(request, 'go_global.html')
 
-# def digital_grow(request):
-#     if not request.session.get('registered'):
-#         return redirect('/register/')
-#     return render(request, 'digital.html')
+def digital_grow(request):
+    if not request.session.get('registered'):
+        return redirect('/register/')
+    return render(request, 'digital.html')
 
-# def team_view(request):
-#     if not request.session.get('registered'):
-#         return redirect('/register/')
-#     #return render(request, 'team.html')
-#     team_members = TeamMember.objects.all()
-#     return render(request, 'team.html', {'team_members': team_members})
+def team_view(request):
+    if not request.session.get('registered'):
+        return redirect('/register/')
+    #return render(request, 'team.html')
+    team_members = TeamMember.objects.all()
+    return render(request, 'team.html', {'team_members': team_members})
 
 
 def register_view(request):
