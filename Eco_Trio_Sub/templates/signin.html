@@ -75,10 +75,14 @@
        {# --- Add Google Sign-In Here --- #}
       <div class="divider">OR</div>
 
-      <a href="{% provider_login_url 'google' %}" class="google-signin-button">
-          <img src="{% static "media/google_logo.png" %}" alt="Google logo"/>
+      <a href="{% provider_login_url 'google' %}" 
+        style="display:inline-flex; align-items:center; gap:8px; padding:8px 12px; border:1px solid #ccc; border-radius:4px; background-color:white; text-decoration:none; color:black; font-weight:500;">
+          <img src="{% static 'media/glogo.jpg' %}" 
+              alt="Google logo" 
+              style="width:20px; height:20px;"/>
           Sign in with Google
       </a>
+
       {# --- End Google Sign-In --- #}
 
       <!-- Sign Up Link -->
