@@ -347,8 +347,18 @@ def register_view(request):
 
     # ✅ Step 3: POST - Handle new registration
     if request.method == 'POST':
-        print("📩 POST DATA:", request.POST)
-        form = RegistrationForm(request.POST)
+        post_data = request.POST.copy()
+
+        # Parse signup_time from JS format to Django format
+        if 'signup_time' in post_data:
+            try:
+                post_data['signup_time'] = datetime.strptime(
+                    post_data['signup_time'], '%m/%d/%Y, %I:%M:%S %p'
+                )
+            except ValueError:
+                post_data['signup_time'] = None  # Let form raise validation error
+
+        form = RegistrationForm(post_data)
         if form.is_valid():
             form.save()
             return JsonResponse({"success": True})
