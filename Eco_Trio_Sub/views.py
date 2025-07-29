@@ -346,10 +346,16 @@ def register_view(request):
 
     # ✅ Step 3: POST - Handle new registration
     if request.method == 'POST':
-        print("📩 POST DATA:", request.POST)  # Will appear in Render logs
-        logger.warning(f"📩 POST DATA: {request.POST}") 
-        data = request.POST
-        email = data.get('email')
+        print("📩 POST DATA:", request.POST)
+        form = Registration(request.POST)
+        if form.is_valid():
+            form.save()
+            return JsonResponse({"success": True})
+        else:
+            print("❌ Form Errors:", form.errors)
+            return JsonResponse({"success": False, "errors": form.errors}, status=400)
+        # data = request.POST
+        # email = data.get('email')
 
         # Check if already in DB
         if Registration.objects.filter(email=email).exists():
