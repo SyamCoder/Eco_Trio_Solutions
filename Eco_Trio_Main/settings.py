@@ -31,7 +31,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+# DEBUG = True
+DEBUG = os.environ.get('DEBUG', 'False') == 'True'
+
+
 
 ALLOWED_HOSTS = ['eco-trio-solutions-1-51pn.onrender.com']
 CSRF_TRUSTED_ORIGINS = ['https://eco-trio-solutions-1-51pn.onrender.com']
@@ -185,8 +188,11 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'  # for Gmail
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'ecotriosolutionweb@gmail.com'  # your email
-EMAIL_HOST_PASSWORD = 'xaaq jgsx lizd tgqk'  # use App Password if using Gmail
+# EMAIL_HOST_USER = 'ecotriosolutionweb@gmail.com'  # your email
+# EMAIL_HOST_PASSWORD = 'xaaq jgsx lizd tgqk'  # use App Password if using Gmail
+EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
+
 
 SOCIALACCOUNT_LOGIN_ON_GET = True  # Automatically log in users after social account authentication
 LOGIN_REDIRECT_URL = '/home/'  # Redirect users to this URL after successful login
