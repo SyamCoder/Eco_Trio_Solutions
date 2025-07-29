@@ -16,6 +16,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.core.mail import EmailMessage, send_mail
 from django.conf import settings
 from .models import Job
+from .forms import RegistrationForm  # ✅ Import your form
 
 EMAIL_HOST_USER = 'annaluruchaitanya@gmail.com'
 
@@ -347,7 +348,7 @@ def register_view(request):
     # ✅ Step 3: POST - Handle new registration
     if request.method == 'POST':
         print("📩 POST DATA:", request.POST)
-        form = Registration(request.POST)
+        form = RegistrationForm(request.POST)
         if form.is_valid():
             form.save()
             return JsonResponse({"success": True})
