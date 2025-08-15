@@ -334,16 +334,14 @@ from django.utils import timezone
 from django.core.mail import send_mail
 from django.conf import settings
 from .models import Registration
-
 def register_view(request):
     """
     Handles registration form submissions for customer inquiries.
-    It validates data against the Registration model, saves a new
-    inquiry to the database, sends a notification email, and
-    posts the data to an external Google Form.
+    Saves inquiry to DB, sends notification email to admin,
+    and posts data to Google Form.
     """
     if request.method == 'POST':
-        # Retrieve form data from the POST request
+        # Retrieve form data
         username = request.POST.get('username')
         email = request.POST.get('email')
         phone = request.POST.get('phone')
@@ -351,16 +349,13 @@ def register_view(request):
         interest = request.POST.get('interest')
         looking_for = request.POST.get('looking_for')
 
-        # --- Basic Validation ---
-        # Ensure all required fields are filled out
-        required_fields = [username, email, phone, occupation, interest, looking_for]
-        if not all(required_fields):
+        # Validate all fields
+        if not all([username, email, phone, occupation, interest, looking_for]):
             messages.error(request, 'Please fill all required fields.')
             return redirect(request.META.get('HTTP_REFERER', '/'))
 
         try:
-            # --- Save to the Database ---
-            # Create a new inquiry object with the submitted data
+            # Save to DB
             Registration.objects.create(
                 username=username,
                 email=email,
@@ -371,8 +366,7 @@ def register_view(request):
                 signup_time=timezone.now(),
             )
 
-            # --- Post Data to Google Form ---
-            # NOTE: Replace the Google Form URL and entry IDs with your actual values.
+            # Post to Google Form (optional)
             google_form_url = "https://docs.google.com/forms/d/e/YOUR_GOOGLE_FORM_ID/formResponse"
             google_form_data = {
                 "entry.1111111111": username,
@@ -387,39 +381,35 @@ def register_view(request):
             except Exception as e:
                 print(f"Google Form submission failed: {e}")
 
-            # --- Send Admin Notification Email ---
+            # Send email directly to ecotriosolutionweb@gmail.com
             subject = f"New Inquiry: {username}"
             body = f"""
-            A new user has submitted an inquiry:
+A new user has submitted an inquiry:
 
-            Name: {username}
-            Email: {email}
-            Phone: {phone}
-            Occupation: {occupation}
-            Area of Interest: {interest}
-            Looking For: {looking_for}
-            Submission Time: {timezone.now()}
-            """
+Name: {username}
+Email: {email}
+Phone: {phone}
+Occupation: {occupation}
+Area of Interest: {interest}
+Looking For: {looking_for}
+Submission Time: {timezone.now()}
+"""
             send_mail(
                 subject,
                 body,
-                settings.DEFAULT_FROM_EMAIL,
-                [settings.EMAIL_HOST_USER],
+                ['ecotriosolutionweb@gmail.com'],  # direct recipient
                 fail_silently=False,
             )
 
-            # --- Final Success Message and Redirect ---
             messages.success(request, 'Thank you for your interest! We have received your details and will contact you shortly.')
             request.session['has_registered'] = True
             return redirect(request.META.get('HTTP_REFERER', '/'))
 
         except Exception as e:
-            # Handle any unexpected errors during submission
             print(f"An error occurred: {e}")
             messages.error(request, 'An error occurred during submission. Please try again.')
             return redirect(request.META.get('HTTP_REFERER', '/'))
 
-    # Render the registration page for GET requests
     return render(request, 'index.html')
 
 
