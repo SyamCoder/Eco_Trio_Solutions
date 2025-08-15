@@ -336,70 +336,93 @@ from django.conf import settings
 from .models import Registration
 
 def register_view(request):
-    # ✅ Step 1: If already registered in session, skip
-    if request.session.get('registered'):
-        return redirect('/home')
-
-    # ✅ Step 2: If logged in, check DB by email
-    if request.user.is_authenticated:
-        if Registration.objects.filter(email=request.user.email).exists():
-            request.session['registered'] = True
-            return redirect('/home')
-
-    # ✅ Step 3: POST - Handle new registration
+    """
+    Handles registration form submissions for customer inquiries.
+    It validates data against the Registration model, saves a new
+    inquiry to the database, sends a notification email, and
+    posts the data to an external Google Form.
+    """
     if request.method == 'POST':
-        data = request.POST
-        email = data.get('email')
+        # Retrieve form data from the POST request
+        username = request.POST.get('username')
+        email = request.POST.get('email')
+        phone = request.POST.get('phone')
+        occupation = request.POST.get('occupation')
+        interest = request.POST.get('interest')
+        looking_for = request.POST.get('looking_for')
 
-        # Check if already in DB
-        if Registration.objects.filter(email=email).exists():
-            request.session['registered'] = True
-            return redirect('/home')
+        # --- Basic Validation ---
+        # Ensure all required fields are filled out
+        required_fields = [username, email, phone, occupation, interest, looking_for]
+        if not all(required_fields):
+            messages.error(request, 'Please fill all required fields.')
+            return redirect(request.META.get('HTTP_REFERER', '/'))
 
-        # Check required fields
-        if all([data.get('first_name'), data.get('phone'), data.get('occupation'), data.get('interest')]):
-            # Save to DB
+        try:
+            # --- Save to the Database ---
+            # Create a new inquiry object with the submitted data
             Registration.objects.create(
-                first_name=data.get('first_name'),
-                last_name=data.get('last_name'),
-                phone=data.get('phone'),
+                username=username,
                 email=email,
-                occupation=data.get('occupation'),
-                interest=data.get('interest'),
-                signup_time=timezone.now(),  # ⏰ Use timezone.now()
-                device_info=data.get('device_info'),
+                phone=phone,
+                occupation=occupation,
+                interest=interest,
+                looking_for=looking_for,
+                signup_time=timezone.now(),
             )
 
-            # 📧 Email to admin
-            subject = f"New Registration Submission from {data.get('first_name')}"
-            body = f"""
-📬 New Inquiry/Registration:
+            # --- Post Data to Google Form ---
+            # NOTE: Replace the Google Form URL and entry IDs with your actual values.
+            google_form_url = "https://docs.google.com/forms/d/e/YOUR_GOOGLE_FORM_ID/formResponse"
+            google_form_data = {
+                "entry.1111111111": username,
+                "entry.2222222222": email,
+                "entry.3333333333": phone,
+                "entry.4444444444": occupation,
+                "entry.5555555555": interest,
+                "entry.6666666666": looking_for,
+            }
+            try:
+                requests.post(google_form_url, data=google_form_data)
+            except Exception as e:
+                print(f"Google Form submission failed: {e}")
 
-👤 Name: {data.get('first_name')} {data.get('last_name')}
-📞 Phone: {data.get('phone')}
-📧 Email: {email}
-💼 Occupation: {data.get('occupation')}
-🧠 Interest: {data.get('interest')}
-🖥️ Device Info: {data.get('device_info')}
-⏰ Time: {timezone.now().strftime('%Y-%m-%d %H:%M:%S')}
-"""
+            # --- Send Admin Notification Email ---
+            subject = f"New Inquiry: {username}"
+            body = f"""
+            A new user has submitted an inquiry:
+
+            Name: {username}
+            Email: {email}
+            Phone: {phone}
+            Occupation: {occupation}
+            Area of Interest: {interest}
+            Looking For: {looking_for}
+            Submission Time: {timezone.now()}
+            """
             send_mail(
                 subject,
                 body,
-                settings.EMAIL_HOST_USER,
-                ['ecotriosolutionweb@gmail.com'],
+                settings.DEFAULT_FROM_EMAIL,
+                [settings.ADMIN_EMAIL],
                 fail_silently=False,
             )
 
-            # Mark as registered in session
-            request.session['registered'] = True
+            # --- Final Success Message and Redirect ---
+            messages.success(request, 'Thank you for your interest! We have received your details and will contact you shortly.')
+            request.session['has_registered'] = True
+            return redirect(request.META.get('HTTP_REFERER', '/'))
 
-            return redirect('/home')
-        else:
-            return render(request, 'register.html', {'error': 'Please fill all required fields.'})
+        except Exception as e:
+            # Handle any unexpected errors during submission
+            print(f"An error occurred: {e}")
+            messages.error(request, 'An error occurred during submission. Please try again.')
+            return redirect(request.META.get('HTTP_REFERER', '/'))
 
-    # ✅ Step 4: Show form only if not registered
+    # Render the registration page for GET requests
     return render(request, 'register.html')
+
+
 
 #Main registerview function
 # def register_view(request):
