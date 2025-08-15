@@ -362,12 +362,14 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # Email settings
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST = 'smtp.gmail.com'  # for Gmail
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
-EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
-ADMIN_EMAIL = os.environ.get('EMAIL_HOST_USER')
+EMAIL_HOST_USER = 'ecotriosolutionweb@gmail.com'  # your email
+EMAIL_HOST_PASSWORD = 'xaaq jgsx lizd tgqk'  # use App Password if using Gmail
+ADMIN_EMAIL = 'ecotriosolutionweb@gmail.com'
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+
 
 # Authentication settings
 SOCIALACCOUNT_LOGIN_ON_GET = True
