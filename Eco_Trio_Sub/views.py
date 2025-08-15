@@ -301,29 +301,29 @@ import requests
 
 
 def home_view(request):
-    if not request.session.get('registered'):
-        return redirect('/register/')
+    # if not request.session.get('registered'):
+    #     return redirect('/register/')
     return render(request, 'index.html')
 
 
 def agri_services_view(request):
-    if not request.session.get('registered'):
-        return redirect('/register/')
+    # if not request.session.get('registered'):
+    #     return redirect('/register/')
     return render(request, 'agri_service.html')
 
 def global_view(request):
-    if not request.session.get('registered'):
-        return redirect('/register/')
+    # if not request.session.get('registered'):
+    #     return redirect('/register/')
     return render(request, 'go_global.html')
 
 def digital_grow(request):
-    if not request.session.get('registered'):
-        return redirect('/register/')
+    # if not request.session.get('registered'):
+    #     return redirect('/register/')
     return render(request, 'digital.html')
 
 def team_view(request):
-    if not request.session.get('registered'):
-        return redirect('/register/')
+    # if not request.session.get('registered'):
+    #     return redirect('/register/')
     #return render(request, 'team.html')
     team_members = TeamMember.objects.all()
     return render(request, 'team.html', {'team_members': team_members})
@@ -494,8 +494,8 @@ def register_view(request):
 
 def contact_view(request):
     if request.method == "GET":
-        if not request.session.get('registered'):
-            return redirect('/register/')
+        # if not request.session.get('registered'):
+        #     return redirect('/register/')
         return render(request, 'contact.html')
     if request.method == 'POST':
         name = request.POST.get('name', '')
@@ -534,8 +534,8 @@ Message:
 
 
 def collab_view(request):
-    if not request.session.get('registered'):
-        return redirect('/register/')
+    # if not request.session.get('registered'):
+    #     return redirect('/register/')
     collaborations = Collaboration.objects.all()
     jobs = Job.objects.all()
     return render(request, 'collab.html', {'collaborations': collaborations,'jobs':jobs})
