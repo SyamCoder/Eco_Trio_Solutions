@@ -404,7 +404,7 @@ def register_view(request):
                 subject,
                 body,
                 settings.DEFAULT_FROM_EMAIL,
-                [settings.ADMIN_EMAIL],
+                [settings.EMAIL_HOST_USER],
                 fail_silently=False,
             )
 
