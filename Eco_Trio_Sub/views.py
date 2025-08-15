@@ -397,6 +397,7 @@ Submission Time: {timezone.now()}
             send_mail(
                 subject,
                 body,
+                settings.DEFAULT_FROM_EMAIL,   # sender's Gmail
                 ['ecotriosolutionweb@gmail.com'],  # direct recipient
                 fail_silently=False,
             )
