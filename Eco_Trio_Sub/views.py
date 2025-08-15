@@ -420,7 +420,7 @@ def register_view(request):
             return redirect(request.META.get('HTTP_REFERER', '/'))
 
     # Render the registration page for GET requests
-    return render(request, 'register.html')
+    return render(request, 'index.html')
 
 
 
