@@ -260,6 +260,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'Eco_Trio_Sub',
+    'storages',
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
