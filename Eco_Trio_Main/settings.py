@@ -385,7 +385,9 @@ from pathlib import Path
 import dj_database_url
 from dotenv import load_dotenv
 
-load_dotenv() 
+# Load environment variables
+load_dotenv()
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
@@ -397,18 +399,20 @@ DEBUG = os.environ.get('DEBUG', 'False') == 'True'
 # Allowed hosts and CSRF settings for Render
 RENDER_EXTERNAL_HOSTNAME = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
 
-# ✅ Add Render URL, your custom domain, and www version
-ALLOWED_HOSTS = [
-    RENDER_EXTERNAL_HOSTNAME,  # Render hostname
-    'ecotrio.in',              # Your domain
-    'www.ecotrio.in'           # www version
-]
+ALLOWED_HOSTS = []
+CSRF_TRUSTED_ORIGINS = []
 
-CSRF_TRUSTED_ORIGINS = [
-    f"https://{RENDER_EXTERNAL_HOSTNAME}",
-    "https://ecotrio.in",
-    "https://www.ecotrio.in"
-]
+if RENDER_EXTERNAL_HOSTNAME:
+    ALLOWED_HOSTS += [
+        RENDER_EXTERNAL_HOSTNAME,   # Render hostname
+        'ecotrio.in',               # Your domain
+        'www.ecotrio.in'            # www version
+    ]
+    CSRF_TRUSTED_ORIGINS += [
+        f"https://{RENDER_EXTERNAL_HOSTNAME}",
+        "https://ecotrio.in",
+        "https://www.ecotrio.in"
+    ]
 
 # Optional: Allow localhost in debug mode
 if DEBUG:
@@ -426,7 +430,11 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
+    # Local apps
     'Eco_Trio_Sub',
+
+    # Third-party apps
     'storages',
     'allauth',
     'allauth.account',
@@ -470,10 +478,8 @@ TEMPLATES = [
     },
 ]
 
-# ✅ FIXED WSGI app reference
 WSGI_APPLICATION = 'Eco_Trio_Main.wsgi.application'
 
-# ✅ Database settings
 # Database settings
 DATABASE_URL = os.environ.get('DATABASE_URL')
 
@@ -483,12 +489,9 @@ if DATABASE_URL:
             default=DATABASE_URL,
             conn_max_age=600,
             conn_health_checks=True,
-            ssl_require=True  # 🔑 Force SSL for Render Postgres
+            ssl_require=True  # Force SSL for Render Postgres
         )
     }
-
-    # Extra: Ensure psycopg2 uses SSL
-    DATABASES['default']['OPTIONS'] = {"sslmode": "require"}
 else:
     DATABASES = {
         'default': {
@@ -496,7 +499,6 @@ else:
             'NAME': BASE_DIR / 'db.sqlite3',
         }
     }
-
 
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [
@@ -538,12 +540,12 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # Email settings
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'  # for Gmail
+EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'ecotriosolutionweb@gmail.com'  # your email
-EMAIL_HOST_PASSWORD = 'xaaq jgsx lizd tgqk'       # Gmail app password
-ADMIN_EMAIL = 'ecotriosolutionweb@gmail.com'
+EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', 'ecotriosolutionweb@gmail.com')
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', 'xaaq jgsx lizd tgqk')
+ADMIN_EMAIL = EMAIL_HOST_USER
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
 # Authentication settings
