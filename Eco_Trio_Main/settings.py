@@ -380,10 +380,6 @@ Django settings for Eco_Trio_Main project.
 
 
 
-"""
-Django settings for Eco_Trio_Main project.
-"""
-
 import os
 from pathlib import Path
 import dj_database_url
@@ -404,8 +400,8 @@ RENDER_EXTERNAL_HOSTNAME = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
 # ✅ Add Render URL, your custom domain, and www version
 ALLOWED_HOSTS = [
     RENDER_EXTERNAL_HOSTNAME,  # Render hostname
-    'ecotrio.in',  # Your domain
-    'www.ecotrio.in'  # www version
+    'ecotrio.in',              # Your domain
+    'www.ecotrio.in'           # www version
 ]
 
 CSRF_TRUSTED_ORIGINS = [
@@ -421,11 +417,6 @@ if DEBUG:
         'http://localhost:8000',
         'http://127.0.0.1:8000'
     ]
-
-
-# if DEBUG:
-#     ALLOWED_HOSTS += ['localhost', '127.0.0.1']
-#     CSRF_TRUSTED_ORIGINS += ['http://localhost:8000', 'http://127.0.0.1:8000']
 
 # Application definition
 INSTALLED_APPS = [
@@ -479,9 +470,10 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'Eco_Trio_Sub.wsgi.application'
+# ✅ FIXED WSGI app reference
+WSGI_APPLICATION = 'Eco_Trio_Main.wsgi.application'
 
-# Database settings
+# ✅ Database settings
 DATABASE_URL = os.environ.get('DATABASE_URL')
 if DATABASE_URL:
     DATABASES = {
@@ -489,7 +481,7 @@ if DATABASE_URL:
             default=DATABASE_URL,
             conn_max_age=600,
             conn_health_checks=True,
-            ssl_require=True  # ⭐ ADDED THIS LINE ⭐
+            ssl_require=True   # 🔑 Required for Render Postgres
         )
     }
 else:
@@ -544,10 +536,9 @@ EMAIL_HOST = 'smtp.gmail.com'  # for Gmail
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'ecotriosolutionweb@gmail.com'  # your email
-EMAIL_HOST_PASSWORD = 'xaaq jgsx lizd tgqk'  # use App Password if using Gmail
+EMAIL_HOST_PASSWORD = 'xaaq jgsx lizd tgqk'       # Gmail app password
 ADMIN_EMAIL = 'ecotriosolutionweb@gmail.com'
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
-
 
 # Authentication settings
 SOCIALACCOUNT_LOGIN_ON_GET = True
