@@ -227,9 +227,9 @@ RENDER_EXTERNAL_HOSTNAME = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
 
 # ✅ Add Render URL, your custom domain, and www version
 ALLOWED_HOSTS = [
-    RENDER_EXTERNAL_HOSTNAME,             # Render hostname
-    'ecotrio.in',                          # Your domain
-    'www.ecotrio.in'                       # www version
+    RENDER_EXTERNAL_HOSTNAME,
+    'ecotrio.in',
+    'www.ecotrio.in'
 ]
 
 CSRF_TRUSTED_ORIGINS = [
@@ -245,11 +245,6 @@ if DEBUG:
         'http://localhost:8000',
         'http://127.0.0.1:8000'
     ]
-
-
-# if DEBUG:
-#     ALLOWED_HOSTS += ['localhost', '127.0.0.1']
-#     CSRF_TRUSTED_ORIGINS += ['http://localhost:8000', 'http://127.0.0.1:8000']
 
 # Application definition
 INSTALLED_APPS = [
@@ -312,7 +307,8 @@ if DATABASE_URL:
         'default': dj_database_url.config(
             default=DATABASE_URL,
             conn_max_age=600,
-            conn_health_checks=True
+            conn_health_checks=True,
+            ssl_require=True  # 👈 Added this line
         )
     }
 else:
@@ -363,11 +359,11 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # Email settings
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'  # for Gmail
+EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'ecotriosolutionweb@gmail.com'  # your email
-EMAIL_HOST_PASSWORD = 'xaaq jgsx lizd tgqk'  # use App Password if using Gmail
+EMAIL_HOST_USER = 'ecotriosolutionweb@gmail.com'
+EMAIL_HOST_PASSWORD = 'xaaq jgsx lizd tgqk'
 ADMIN_EMAIL = 'ecotriosolutionweb@gmail.com'
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
