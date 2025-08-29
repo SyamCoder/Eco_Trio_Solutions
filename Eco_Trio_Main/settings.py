@@ -207,182 +207,6 @@
 Django settings for Eco_Trio_Main project.
 """
 
-# import os
-# from pathlib import Path
-# import dj_database_url
-# from dotenv import load_dotenv
-
-# load_dotenv()  # Load .env file locally
-
-# BASE_DIR = Path(__file__).resolve().parent.parent
-
-# # SECURITY WARNING: keep the secret key used in production secret!
-# SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'dev-secret-key')
-
-# # SECURITY WARNING: don't run with debug turned on in production!
-# DEBUG = os.environ.get('DEBUG', 'False') == 'True'
-
-# # Allowed hosts and CSRF settings for Render
-# RENDER_EXTERNAL_HOSTNAME = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
-
-# # ✅ Add Render URL, your custom domain, and www version
-# ALLOWED_HOSTS = [
-#     RENDER_EXTERNAL_HOSTNAME,             # Render hostname
-#     'ecotrio.in',                          # Your domain
-#     'www.ecotrio.in'                       # www version
-# ]
-
-# CSRF_TRUSTED_ORIGINS = [
-#     f"https://{RENDER_EXTERNAL_HOSTNAME}",
-#     "https://ecotrio.in",
-#     "https://www.ecotrio.in"
-# ]
-
-# # Optional: Allow localhost in debug mode
-# if DEBUG:
-#     ALLOWED_HOSTS += ['localhost', '127.0.0.1']
-#     CSRF_TRUSTED_ORIGINS += [
-#         'http://localhost:8000',
-#         'http://127.0.0.1:8000'
-#     ]
-
-
-# # if DEBUG:
-# #     ALLOWED_HOSTS += ['localhost', '127.0.0.1']
-# #     CSRF_TRUSTED_ORIGINS += ['http://localhost:8000', 'http://127.0.0.1:8000']
-
-# # Application definition
-# INSTALLED_APPS = [
-#     'django.contrib.admin',
-#     'django.contrib.auth',
-#     'django.contrib.contenttypes',
-#     'django.contrib.sessions',
-#     'django.contrib.messages',
-#     'django.contrib.staticfiles',
-#     'Eco_Trio_Sub',
-#     'storages',
-#     'allauth',
-#     'allauth.account',
-#     'allauth.socialaccount',
-#     'allauth.socialaccount.providers.google',
-#     'whitenoise.runserver_nostatic',
-# ]
-
-# AUTHENTICATION_BACKENDS = [
-#     'django.contrib.auth.backends.ModelBackend',
-#     'allauth.account.auth_backends.AuthenticationBackend',
-# ]
-
-# MIDDLEWARE = [
-#     'django.middleware.security.SecurityMiddleware',
-#     'whitenoise.middleware.WhiteNoiseMiddleware',
-#     'django.contrib.sessions.middleware.SessionMiddleware',
-#     'django.middleware.common.CommonMiddleware',
-#     'django.middleware.csrf.CsrfViewMiddleware',
-#     'django.contrib.auth.middleware.AuthenticationMiddleware',
-#     'django.contrib.messages.middleware.MessageMiddleware',
-#     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-#     'allauth.account.middleware.AccountMiddleware',
-# ]
-
-# ROOT_URLCONF = 'Eco_Trio_Main.urls'
-
-# TEMPLATES = [
-#     {
-#         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-#         'DIRS': [os.path.join(BASE_DIR, 'Eco_Trio_Sub/templates')],
-#         'APP_DIRS': True,
-#         'OPTIONS': {
-#             'context_processors': [
-#                 'django.template.context_processors.debug',
-#                 'django.template.context_processors.request',
-#                 'django.contrib.auth.context_processors.auth',
-#                 'django.contrib.messages.context_processors.messages',
-#             ],
-#         },
-#     },
-# ]
-
-# WSGI_APPLICATION = 'Eco_Trio_Sub.wsgi.application'
-
-# # Database settings
-# DATABASE_URL = os.environ.get('DATABASE_URL')
-# if DATABASE_URL:
-#     DATABASES = {
-#         'default': dj_database_url.config(
-#             default=DATABASE_URL,
-#             conn_max_age=600,
-#             conn_health_checks=True
-#         )
-#     }
-# else:
-#     DATABASES = {
-#         'default': {
-#             'ENGINE': 'django.db.backends.sqlite3',
-#             'NAME': BASE_DIR / 'db.sqlite3',
-#         }
-#     }
-
-# # Password validation
-# AUTH_PASSWORD_VALIDATORS = [
-#     {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
-#     {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'},
-#     {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator'},
-#     {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
-# ]
-
-# # Social Account Providers
-# SOCIALACCOUNT_PROVIDERS = {
-#     'google': {
-#         'APP': {
-#             'client_id': os.environ.get('GOOGLE_CLIENT_ID'),
-#             'secret': os.environ.get('GOOGLE_CLIENT_SECRET'),
-#         },
-#         'SCOPE': ['profile', 'email'],
-#         'AUTH_PARAMS': {'access_type': 'offline'},
-#         'METHOD': 'oauth2',
-#         'VERIFY_EMAIL': True,
-#     }
-# }
-
-# # Internationalization
-# LANGUAGE_CODE = 'en-us'
-# TIME_ZONE = 'UTC'
-# USE_I18N = True
-# USE_TZ = True
-
-# # Static files
-# STATIC_URL = '/static/'
-# STATICFILES_DIRS = [BASE_DIR / 'Eco_Trio_Sub' / 'static']
-# STATIC_ROOT = BASE_DIR / 'staticfiles'
-# STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
-
-# # Media files
-# MEDIA_URL = '/media/'
-# MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-
-# # Email settings
-# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-# EMAIL_HOST = 'smtp.gmail.com'  # for Gmail
-# EMAIL_PORT = 587
-# EMAIL_USE_TLS = True
-# EMAIL_HOST_USER = 'ecotriosolutionweb@gmail.com'  # your email
-# EMAIL_HOST_PASSWORD = 'xaaq jgsx lizd tgqk'  # use App Password if using Gmail
-# ADMIN_EMAIL = 'ecotriosolutionweb@gmail.com'
-# DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
-
-
-# # Authentication settings
-# SOCIALACCOUNT_LOGIN_ON_GET = True
-# LOGIN_REDIRECT_URL = '/home/'
-
-# DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
-
-"""
-Django settings for Eco_Trio_Main project.
-"""
-
 import os
 from pathlib import Path
 import dj_database_url
@@ -403,9 +227,9 @@ RENDER_EXTERNAL_HOSTNAME = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
 
 # ✅ Add Render URL, your custom domain, and www version
 ALLOWED_HOSTS = [
-    RENDER_EXTERNAL_HOSTNAME,  # Render hostname
-    'ecotrio.in',  # Your domain
-    'www.ecotrio.in'  # www version
+    RENDER_EXTERNAL_HOSTNAME,             # Render hostname
+    'ecotrio.in',                          # Your domain
+    'www.ecotrio.in'                       # www version
 ]
 
 CSRF_TRUSTED_ORIGINS = [
@@ -488,8 +312,7 @@ if DATABASE_URL:
         'default': dj_database_url.config(
             default=DATABASE_URL,
             conn_max_age=600,
-            conn_health_checks=True,
-            ssl_require=True  # ⭐ ADDED THIS LINE ⭐
+            conn_health_checks=True
         )
     }
 else:
